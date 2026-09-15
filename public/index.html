@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CommunicationAI — Real-Time AI Communication, Storytelling & Public Speaking Coach</title>
+  <meta name="description" content="Transform your communication, storytelling, public speaking, and technical explanations with real-time AI feedback and adaptive coaching.">
+
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Navigation Bar -->
+    <header class="navbar" role="banner">
+      <a href="#" class="nav-brand" id="nav-brand-logo">
+        <div class="brand-icon">🎙️</div>
+        <span class="brand-title">CommunicationAI</span>
+        <span class="brand-badge">Real-Time Coach</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Main Navigation">
+        <button class="nav-tab active" data-view="studio" id="tab-studio">
+          <span>🎙️</span> Live Studio
+        </button>
+        <button class="nav-tab" data-view="modes" id="tab-modes">
+          <span>🧩</span> Practice Modes
+        </button>
+        <button class="nav-tab" data-view="challenges" id="tab-challenges">
+          <span>🔥</span> Daily Challenge
+        </button>
+        <button class="nav-tab" data-view="analytics" id="tab-analytics">
+          <span>📊</span> Progress & History
+        </button>
+      </nav>
+
+      <div class="nav-status">
+        <div class="voice-select-wrapper">
+          <select id="voice-dropdown" class="voice-selector-dropdown" title="Select Natural AI Coach Voice"></select>
+          <button id="btn-preview-voice" class="btn-preview-voice" title="Test Voice Audition">Test Voice 🔊</button>
+        </div>
+        <button class="voice-toggle-pill voice-active" id="btn-toggle-voice" title="Toggle AI Coach Voice (Spoken Feedback & Turns)">
+          <span>🔊</span> <span id="voice-toggle-text">Voice: ON</span>
+        </button>
+        <div class="status-indicator">
+          <span class="status-dot"></span>
+          <span id="nav-ai-status-text">Gemini AI Connecting...</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content" role="main">
+
+      <!-- ==========================================
+           VIEW 1: LIVE COACH STUDIO
+           ========================================== -->
+      <section id="view-studio" class="view-section active" aria-labelledby="studio-heading">
+        <h1 id="studio-heading" class="sr-only" style="display:none;">Live Communication Coaching Studio</h1>
+
+        <!-- Studio Top Bar -->
+        <div class="studio-top-bar">
+          <div class="active-mode-info">
+            <span class="mode-badge-pill" id="active-mode-badge">Free Speech</span>
+            <h2 class="active-topic-title" id="active-topic-title">General Speech & Communication</h2>
+            <button class="btn-pill-action" id="btn-change-mode" onclick="document.getElementById('tab-modes').click();">
+              Change Mode ↗
+            </button>
+          </div>
+
+          <div class="studio-live-metrics">
+            <!-- Tachometer Gauge -->
+            <div class="tachometer-widget">
+              <div class="gauge-svg-wrap">
+                <svg viewBox="0 0 88 52" style="width:100%; height:100%;">
+                  <defs>
+                    <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#f59e0b" />
+                      <stop offset="50%" stop-color="#10b981" />
+                      <stop offset="100%" stop-color="#f43f5e" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M 12 44 A 32 32 0 0 1 76 44" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="7" stroke-linecap="round" />
+                  <path d="M 12 44 A 32 32 0 0 1 76 44" fill="none" stroke="url(#gaugeGrad)" stroke-width="7" stroke-linecap="round" opacity="0.85" />
+                  <line id="gauge-needle" x1="44" y1="44" x2="44" y2="18" stroke="#00f2fe" stroke-width="2.5" stroke-linecap="round" class="gauge-needle-indicator" style="transform: rotate(-45deg);" />
+                  <circle cx="44" cy="44" r="4" fill="#fff" />
+                </svg>
+              </div>
+              <div class="live-metric-item">
+                <span class="metric-label-sm">Cadence</span>
+                <span class="metric-value-dynamic"><span id="live-wpm-val">0</span> <small style="font-size:0.7rem; color:var(--text-muted);">WPM</small></span>
+                <span class="pacing-status-pill optimal" id="pacing-status-pill">Ready</span>
+              </div>
+            </div>
+
+            <div class="live-metric-item">
+              <span class="metric-label-sm">Fillers</span>
+              <span class="metric-value-dynamic" style="color:var(--accent-amber);"><span id="live-fillers-val">0</span></span>
+            </div>
+            <div class="live-metric-item">
+              <span class="metric-label-sm">Duration</span>
+              <span class="metric-value-dynamic" id="session-timer" style="color:#fff;">00:00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Holographic AI Coach Widget -->
+        <div class="holographic-coach-card" id="holographic-coach-widget">
+          <div class="coach-avatar-wrapper">
+            <img src="/assets/ai_coach_avatar.jpg" alt="AI Communication Coach" class="coach-avatar-img" />
+            <div class="coach-pulse-ring" id="coach-pulse-ring"></div>
+          </div>
+          <div class="coach-info-meta">
+            <div class="coach-status-tag" id="coach-status-tag">
+              <span class="status-dot" style="width:6px; height:6px;"></span>
+              <span id="coach-status-text">AI Coach Standing By</span>
+            </div>
+            <div class="coach-speech-bubble" id="coach-speech-bubble">
+              "Speak freely. I'm actively analyzing your clarity, storytelling hooks, and vocal presence."
+            </div>
+          </div>
+        </div>
+
+        <!-- Studio Main 2-Column Grid -->
+        <div class="studio-grid">
+
+          <!-- Left: Camera & Presence HUD -->
+          <div class="camera-panel">
+            <div class="video-container">
+              <video id="camera-feed" autoplay playsinline muted></video>
+              <canvas id="vision-overlay-canvas"></canvas>
+
+              <!-- Floating Audience Reaction Anchor -->
+              <div class="audience-reaction-anchor" id="audience-reaction-anchor"></div>
+
+              <div class="video-status-overlay">
+                <div class="hud-pill">
+                  <span style="color:var(--accent-cyan);">👁️</span>
+                  <span>Eye Contact Alignment Reticle</span>
+                </div>
+                <div class="hud-pill" style="font-family:var(--font-mono); font-size:0.7rem;">
+                  <span>HUD ACTIVE</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="camera-controls-bar">
+              <div class="device-btn-group">
+                <button class="btn-icon" id="btn-toggle-camera" title="Toggle Camera (Privacy Controlled)">📹</button>
+                <button class="btn-icon" id="btn-toggle-mic" title="Toggle Microphone">🎤</button>
+              </div>
+              <div class="speech-mode-selector">
+                <span>Microphone speech capture active</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Live Speech Stream & Signals -->
+          <div class="transcript-panel">
+            <div class="panel-header-subtle">
+              <span class="panel-header-title">
+                <span>💬</span> Live Speech Transcription & Feedback
+              </span>
+              <span style="font-size:0.75rem; color:var(--text-muted);">Non-intrusive stream</span>
+            </div>
+
+            <!-- Interview Turn Status Bar (Active during Interview Mode) -->
+            <div class="interview-turn-bar" id="interview-turn-bar">
+              <div class="turn-badge" id="interview-turn-badge">
+                <span>🎙️</span> <span id="turn-status-text">Your Turn: Answer the Question</span>
+              </div>
+              <button class="btn-done-answering" id="btn-done-turn">Done Answering / Next Turn ➔</button>
+            </div>
+
+            <!-- Live Speech Stream -->
+            <div class="transcript-stream-box" id="transcript-stream">
+              <div class="transcript-placeholder">
+                <p>Click <strong>Start Session</strong> and speak into your microphone.</p>
+                <span style="font-size:0.8rem; color:var(--text-muted);">(You can also test with sample presets below)</span>
+              </div>
+            </div>
+
+            <!-- Audio Waveform Canvas -->
+            <div class="audio-waveform-container">
+              <canvas id="audio-wave-canvas"></canvas>
+            </div>
+
+            <!-- Non-Intrusive Live Coaching Signals Toast -->
+            <div class="signals-stream-container" id="signals-stream">
+              <div style="font-size:0.82rem; color:var(--text-muted); font-style:italic;">
+                Coach monitoring speech cadence, fillers, and narrative hooks...
+              </div>
+            </div>
+
+            <!-- Quick Simulator / Silent Input Bar -->
+            <div class="simulation-input-bar">
+              <input type="text" class="sim-input" id="sim-input" placeholder="Type or paste speech to test in quiet mode..." />
+              <button class="btn-pill-action" id="btn-sim-send">Send</button>
+              <button class="sim-preset-btn" data-preset="story" title="Insert realistic college failure story">Story Preset</button>
+              <button class="sim-preset-btn" data-preset="ece" title="Insert 6T SRAM technical explanation">ECE SRAM</button>
+              <button class="sim-preset-btn" data-preset="interview" title="Insert STAR interview response">STAR Preset</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Studio Bottom Controls -->
+        <div class="studio-bottom-controls">
+          <div class="prompt-guidance-preview" style="flex-direction:column; align-items:flex-start; gap:6px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:0.8rem; font-weight:700; text-transform:uppercase; color:var(--text-muted);">Framework:</span>
+              <div class="roadmap-steps-preview" id="roadmap-steps-preview">
+                <!-- Dynamically populated roadmap steps -->
+              </div>
+            </div>
+            <!-- Story Arc Mountain Curve (SVG) -->
+            <div class="story-arc-box" id="story-arc-container">
+              <svg viewBox="0 0 460 48" class="story-arc-svg">
+                <defs>
+                  <linearGradient id="arcStrokeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#00f2fe" />
+                    <stop offset="55%" stop-color="#8b5cf6" />
+                    <stop offset="100%" stop-color="#10b981" />
+                  </linearGradient>
+                </defs>
+                <path d="M 15 38 Q 95 34 160 22 T 260 8 T 350 26 T 445 38" fill="none" stroke="url(#arcStrokeGrad)" stroke-width="2.5" />
+                <!-- Milestone Nodes -->
+                <circle cx="15" cy="38" r="4.5" fill="#00f2fe" class="arc-node-dot"><title>Hook</title></circle>
+                <text x="15" y="47" font-size="8.5" fill="#94a3b8" text-anchor="start">1. Hook</text>
+
+                <circle cx="160" cy="22" r="4.5" fill="#00f2fe" class="arc-node-dot"><title>Context</title></circle>
+                <text x="160" y="32" font-size="8.5" fill="#94a3b8" text-anchor="middle">2. Context</text>
+
+                <circle cx="260" cy="8" r="6" fill="#8b5cf6" stroke="#fff" stroke-width="1.5" class="arc-node-dot"><title>Tension Peak (Summit)</title></circle>
+                <text x="260" y="20" font-size="9" fill="#8b5cf6" font-weight="700" text-anchor="middle">3. TENSION PEAK</text>
+
+                <circle cx="350" cy="26" r="4.5" fill="#10b981" class="arc-node-dot"><title>Turning Point</title></circle>
+                <text x="350" y="36" font-size="8.5" fill="#94a3b8" text-anchor="middle">4. Turn</text>
+
+                <circle cx="445" cy="38" r="4.5" fill="#10b981" class="arc-node-dot"><title>Resolution</title></circle>
+                <text x="445" y="47" font-size="8.5" fill="#94a3b8" text-anchor="end">5. Resolution</text>
+              </svg>
+            </div>
+          </div>
+
+          <div class="session-cta-group">
+            <button class="btn-primary-action" id="btn-start-session">
+              <span>▶</span> Start Session
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           VIEW 2: PRACTICE MODES HUB
+           ========================================== -->
+      <section id="view-modes" class="view-section" aria-labelledby="modes-heading">
+        <div class="section-header">
+          <h2 id="modes-heading" class="section-title">Communication Practice Modes</h2>
+          <p class="section-subtitle">Select a tailored training track to master storytelling, technical clarity, interview pushback, or public speaking.</p>
+        </div>
+
+        <div class="modes-grid">
+          <!-- Mode 1: Storytelling -->
+          <div class="mode-card" data-mode="storytelling">
+            <div class="mode-card-header">
+              <div class="mode-card-icon" style="color:var(--accent-cyan);">📖</div>
+              <div>
+                <h3 class="mode-card-title">Storytelling Coach</h3>
+                <span style="font-size:0.75rem; color:var(--text-muted);">Hook → Tension → Turning Point</span>
+              </div>
+              <span class="mode-card-tag">Signature</span>
+            </div>
+            <p class="mode-card-desc">
+              Train to make stories memorable. Evaluates emotional contrast, curiosity hooks, turning points, and answers: "What will the listener remember tomorrow?"
+            </p>
+            <div class="mode-card-footer">
+              <div class="mode-features-chips">
+                <span class="chip-mini">Curiosity Hooks</span>
+                <span class="chip-mini">Stakes & Tension</span>
+                <span class="chip-mini">Turning Points</span>
+              </div>
+              <span style="color:var(--accent-cyan); font-weight:700; font-size:0.85rem;">Practice →</span>
+            </div>
+          </div>
+
+          <!-- Mode 2: Technical ECE -->
+          <div class="mode-card" data-mode="technical_ece">
+            <div class="mode-card-header">
+              <div class="mode-card-icon" style="color:var(--accent-violet);">⚡</div>
+              <div>
+                <h3 class="mode-card-title">Technical Communication</h3>
+                <span style="font-size:0.75rem; color:var(--text-muted);">ECE / Engineering 3-Levels</span>
+              </div>
+              <span class="mode-card-tag" style="color:var(--accent-cyan); border-color:rgba(0,242,254,0.3);">Engineering</span>
+            </div>
+            <p class="mode-card-desc">
+              Master explaining complex topics (VLSI, SRAM, Microcontrollers, IoT) across 3 audience tiers: Child (analogies), Layman (business value), or Senior Engineer.
+            </p>
+            <div class="mode-card-footer">
+              <div class="mode-features-chips">
+                <span class="chip-mini">Analogies</span>
+                <span class="chip-mini">Zero-Jargon</span>
+                <span class="chip-mini">Why It Matters</span>
+              </div>
+              <span style="color:var(--accent-violet); font-weight:700; font-size:0.85rem;">Practice →</span>
+            </div>
+          </div>
+
+          <!-- Mode 3: Interview & Pressure Response -->
+          <div class="mode-card" data-mode="interview">
+            <div class="mode-card-header">
+              <div class="mode-card-icon" style="color:var(--accent-emerald);">🎯</div>
+              <div>
+                <h3 class="mode-card-title">Interview & Pushback</h3>
+                <span style="font-size:0.75rem; color:var(--text-muted);">STAR & Pressure Responses</span>
+              </div>
+              <span class="mode-card-tag" style="color:var(--accent-emerald); border-color:rgba(16,185,129,0.3);">Career</span>
+            </div>
+            <p class="mode-card-desc">
+              Handle tough interviewer skepticism, self-introductions, STAR behavioral questions, and learn how to admit unknown answers without bluffing.
+            </p>
+            <div class="mode-card-footer">
+              <div class="mode-features-chips">
+                <span class="chip-mini">STAR Framework</span>
+                <span class="chip-mini">Skepticism Defense</span>
+                <span class="chip-mini">Conciseness</span>
+              </div>
+              <span style="color:var(--accent-emerald); font-weight:700; font-size:0.85rem;">Practice →</span>
+            </div>
+          </div>
+
+          <!-- Mode 4: Public Speaking Arena -->
+          <div class="mode-card" data-mode="public_speaking">
+            <div class="mode-card-header">
+              <div class="mode-card-icon" style="color:var(--accent-amber);">🎙️</div>
+              <div>
+                <h3 class="mode-card-title">Public Speaking Arena</h3>
+                <span style="font-size:0.75rem; color:var(--text-muted);">Timed Presentations (1m / 3m / 5m)</span>
+              </div>
+              <span class="mode-card-tag" style="color:var(--accent-amber); border-color:rgba(245,158,11,0.3);">Keynote</span>
+            </div>
+            <p class="mode-card-desc">
+              Deliver timed keynote presentations with live cadence feedback, eye-contact coaching, vocal presence, and slide-free listener engagement.
+            </p>
+            <div class="mode-card-footer">
+              <div class="mode-features-chips">
+                <span class="chip-mini">Pacing (WPM)</span>
+                <span class="chip-mini">Audience Retain</span>
+                <span class="chip-mini">Strong Close</span>
+              </div>
+              <span style="color:var(--accent-amber); font-weight:700; font-size:0.85rem;">Practice →</span>
+            </div>
+          </div>
+
+          <!-- Mode 5: Make It Memorable -->
+          <div class="mode-card" data-mode="make_it_memorable">
+            <div class="mode-card-header">
+              <div class="mode-card-icon" style="color:var(--accent-rose);">✨</div>
+              <div>
+                <h3 class="mode-card-title">Make It Memorable</h3>
+                <span style="font-size:0.75rem; color:var(--text-muted);">Iterative Challenge Gauntlet</span>
+              </div>
+              <span class="mode-card-tag" style="color:var(--accent-rose); border-color:rgba(244,63,94,0.3);">Gauntlet</span>
+            </div>
+            <p class="mode-card-desc">
+              Start with a dry explanation and level up across 6 stages: "Add contrast" → "30-second sprint" → "Analogy" → "Micro-story" → "Tasteful wit".
+            </p>
+            <div class="mode-card-footer">
+              <div class="mode-features-chips">
+                <span class="chip-mini">6-Step Sprint</span>
+                <span class="chip-mini">Tasteful Wit</span>
+                <span class="chip-mini">Iteration</span>
+              </div>
+              <span style="color:var(--accent-rose); font-weight:700; font-size:0.85rem;">Practice →</span>
+            </div>
+          </div>
+
+          <!-- Mode 6: Free Speech -->
+          <div class="mode-card" data-mode="free_speech">
+            <div class="mode-card-header">
+              <div class="mode-card-icon" style="color:#fff;">🌐</div>
+              <div>
+                <h3 class="mode-card-title">Free Speech Coach</h3>
+                <span style="font-size:0.75rem; color:var(--text-muted);">Holistic Coaching Sandbox</span>
+              </div>
+              <span class="mode-card-tag">Open</span>
+            </div>
+            <p class="mode-card-desc">
+              Speak freely on any topic. The coach will analyze filler crutches, clarity, vocabulary, sentence construction, and natural phrasing.
+            </p>
+            <div class="mode-card-footer">
+              <div class="mode-features-chips">
+                <span class="chip-mini">Filler Radar</span>
+                <span class="chip-mini">Grammar Check</span>
+                <span class="chip-mini">Natural English</span>
+              </div>
+              <span style="color:#fff; font-weight:700; font-size:0.85rem;">Practice →</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           VIEW 3: DAILY CHALLENGE
+           ========================================== -->
+      <section id="view-challenges" class="view-section" aria-labelledby="challenges-heading">
+        <div class="section-header">
+          <h2 id="challenges-heading" class="section-title">7-Day Adaptive Daily Challenges</h2>
+          <p class="section-subtitle">Consistent daily speaking sprints that progressively target opening hooks, zero-jargon technical explanations, and natural wit.</p>
+        </div>
+
+        <div class="challenge-card-grid" id="daily-challenges-container">
+          <!-- Dynamically populated from /api/challenges -->
+        </div>
+      </section>
+
+      <!-- ==========================================
+           VIEW 4: PROGRESS ANALYTICS & DASHBOARD
+           ========================================== -->
+      <section id="view-analytics" class="view-section" aria-labelledby="analytics-heading">
+        <div class="section-header">
+          <h2 id="analytics-heading" class="section-title">Personal Communication Analytics</h2>
+          <p class="section-subtitle">Persistent progress tracking, detected communication patterns, and score evolution over time.</p>
+        </div>
+
+        <!-- Top Stat Cards -->
+        <div class="dashboard-stats-grid">
+          <div class="dash-stat-card">
+            <div class="stat-glow-accent"></div>
+            <span class="dash-stat-label">Communication Score</span>
+            <span class="dash-stat-number" id="dash-overall-score">72</span>
+            <span class="dash-stat-change positive">↑ Top 15% Speaking Cadence</span>
+          </div>
+
+          <div class="dash-stat-card">
+            <div class="stat-glow-accent" style="background: radial-gradient(circle, var(--accent-violet-glow), transparent 70%);"></div>
+            <span class="dash-stat-label">Sessions Completed</span>
+            <span class="dash-stat-number" id="dash-sessions-count">0</span>
+            <span class="dash-stat-change" style="color:var(--text-secondary);">Practice Sprints</span>
+          </div>
+
+          <div class="dash-stat-card">
+            <div class="stat-glow-accent" style="background: radial-gradient(circle, var(--accent-emerald-glow), transparent 70%);"></div>
+            <span class="dash-stat-label">Current Streak</span>
+            <span class="dash-stat-number" id="dash-streak-days">1 🔥</span>
+            <span class="dash-stat-change positive">Daily Discipline</span>
+          </div>
+
+          <div class="dash-stat-card">
+            <div class="stat-glow-accent" style="background: radial-gradient(circle, var(--accent-amber-glow), transparent 70%);"></div>
+            <span class="dash-stat-label">Top Filler Crutch</span>
+            <span class="dash-stat-number" id="dash-top-filler" style="color:var(--accent-amber); font-size:1.6rem;">"basically"</span>
+            <span class="dash-stat-change warning">Target: 50% Reduction</span>
+          </div>
+
+          <div class="dash-stat-card">
+            <span class="dash-stat-label">Total Speaking Time</span>
+            <span class="dash-stat-number" id="dash-speaking-time">0m</span>
+            <span class="dash-stat-change" style="color:var(--accent-cyan);">Recorded Speech</span>
+          </div>
+        </div>
+
+        <!-- Main Dashboard Split: Dimensions & History -->
+        <div class="dash-main-grid">
+          <div class="dash-card">
+            <h3 style="font-family:var(--font-heading); font-size:1.15rem; margin-bottom:18px;">8-Dimensional Communication Profile</h3>
+            <div class="dimension-score-grid" id="dash-dimensions-container">
+              <!-- Dynamically populated dimension cards -->
+            </div>
+
+            <div style="margin-top:24px; padding:16px; background:rgba(255,255,255,0.03); border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+              <span style="font-size:0.75rem; text-transform:uppercase; color:var(--accent-cyan); font-weight:700;">Personalized Focus Goal:</span>
+              <p id="dash-target-goal" style="font-size:0.92rem; color:#fff; margin-top:4px;">
+                Improve storytelling tension and reduce filler words by 50%.
+              </p>
+            </div>
+          </div>
+
+          <div class="dash-card">
+            <h3 style="font-family:var(--font-heading); font-size:1.15rem; margin-bottom:18px;">Recent Practice Sessions</h3>
+            <div style="overflow-x:auto;">
+              <table class="history-table">
+                <thead>
+                  <tr>
+                    <th>Mode</th>
+                    <th>Topic</th>
+                    <th>Time</th>
+                    <th>Score</th>
+                    <th>Report</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-history-tbody">
+                  <!-- Dynamically populated from /api/sessions -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ==========================================
+         POST-SESSION EVALUATION REPORT MODAL
+         ========================================== -->
+    <div class="modal-backdrop" id="report-modal" role="dialog" aria-modal="true" aria-labelledby="modal-report-title">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div>
+            <h3 id="modal-report-title" style="font-family:var(--font-heading); font-size:1.35rem; font-weight:700; color:#fff;">Session Communication Report</h3>
+            <span style="font-size:0.8rem; color:var(--text-secondary);">Comprehensive Multi-Dimensional AI Evaluation</span>
+          </div>
+          <button class="modal-close-btn" id="btn-close-modal" aria-label="Close modal">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Hero Score & Verdict -->
+          <div class="report-hero">
+            <div class="score-radial-container">
+              <span class="radial-score-number" id="rep-overall-score">75</span>
+              <span class="radial-score-label">Overall Score</span>
+            </div>
+            <div class="report-hero-details">
+              <p class="report-summary-text" id="rep-summary-text">
+                Solid pacing and clear domain knowledge. Focus on shortening opening background.
+              </p>
+              <div class="report-quick-stats">
+                <span>Words: <strong id="rep-stat-words">0</strong></span>
+                <span>Pacing: <strong id="rep-stat-wpm">0 WPM</strong></span>
+                <span>Fillers: <strong id="rep-stat-fillers" style="color:var(--accent-amber);">0</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Audio Replay Player -->
+          <div class="report-audio-player-box" id="rep-audio-box">
+            <div class="audio-controls-group">
+              <button class="btn-audio-play" id="btn-replay-audio" title="Play Full Session Audio">▶</button>
+              <div>
+                <strong style="color:#fff; font-size:0.9rem;">Listen to Your Recorded Speech</strong>
+                <p style="font-size:0.78rem; color:var(--text-secondary);" id="rep-audio-meta">Review your real delivery, vocal presence, and cadence</p>
+              </div>
+            </div>
+            <div style="font-size:0.8rem; color:var(--accent-cyan);">
+              <span>🔊 Local Playback Ready</span>
+            </div>
+          </div>
+
+          <!-- Radar Chart & Dimension Scores Grid -->
+          <div style="display:grid; grid-template-columns: 1fr 1.15fr; gap:20px; align-items:center; margin-bottom:8px;">
+            <div class="radar-chart-card">
+              <span style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px;">8-Dimension Skill Polygon</span>
+              <div id="rep-radar-container" style="width:100%;"></div>
+            </div>
+            <div class="dimension-score-grid" id="rep-dimensions-grid">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- 2-Column Wins & Problems -->
+          <div class="report-grid-2col">
+            <div class="report-card">
+              <h4 class="report-card-title" style="color:var(--accent-emerald);">
+                <span>✓</span> What You Did Well
+              </h4>
+              <ul class="report-list" id="rep-well-list">
+                <!-- Dynamically populated -->
+              </ul>
+            </div>
+
+            <div class="report-card">
+              <h4 class="report-card-title" style="color:var(--accent-rose);">
+                <span>⚡</span> Biggest Problems & Actionable Fixes
+              </h4>
+              <div id="rep-problems-container">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Strongest vs Weakest Moments -->
+          <div class="report-grid-2col">
+            <div class="report-card">
+              <h4 class="report-card-title" style="color:var(--accent-cyan);">
+                <span>💡</span> Strongest Moment / Hook
+              </h4>
+              <div id="rep-best-moment-box">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <div class="report-card">
+              <h4 class="report-card-title" style="color:var(--accent-amber);">
+                <span>🔄</span> Weakest Moment & Better Alternative
+              </h4>
+              <div id="rep-weak-moment-box">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Storytelling & Wit Analysis -->
+          <div class="report-grid-2col">
+            <div class="report-card">
+              <h4 class="report-card-title" style="color:var(--accent-violet);">
+                <span>📖</span> Storytelling & Tension
+              </h4>
+              <div id="rep-storytelling-box">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <div class="report-card">
+              <h4 class="report-card-title" style="color:var(--accent-cyan);">
+                <span>🎭</span> Wit & Energy
+              </h4>
+              <div id="rep-wit-box">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Natural Phrasing Corrections -->
+          <div class="report-card">
+            <h4 class="report-card-title" style="color:#fff;">
+              <span>🌐</span> Natural Phrasing & Idiom Improvements
+            </h4>
+            <div style="overflow-x:auto;">
+              <table class="phrasing-table">
+                <thead>
+                  <tr>
+                    <th>What You Said</th>
+                    <th>More Natural International Phrasing</th>
+                    <th>Why</th>
+                  </tr>
+                </thead>
+                <tbody id="rep-phrasing-tbody">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Targeted Next Exercise -->
+          <div class="next-exercise-box" id="rep-next-exercise-container">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-secondary" id="btn-modal-close-action">Close Report</button>
+          <button class="btn-primary-action" id="btn-modal-retry">
+            <span>🔄</span> Attempt 2: Retry with Feedback
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/coachVoice.js"></script>
+  <script src="/js/audioRecorder.js"></script>
+  <script src="/js/radarChart.js"></script>
+  <script src="/js/audioVisualizer.js"></script>
+  <script src="/js/vision.js"></script>
+  <script src="/js/speech.js"></script>
+  <script src="/js/dashboard.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
