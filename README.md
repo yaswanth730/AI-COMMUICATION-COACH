@@ -143,3 +143,10 @@ npm.cmd test
 
 ## 🧪 Testing in Quiet Environments
 In the Live Studio, you can either speak into the microphone or use the **Quick Simulator Bar** at the bottom of the transcript panel. Click on presets like **"Story Preset"**, **"ECE SRAM"**, or **"STAR Preset"** to immediately test the transcription, filler analysis, and report generation engines.
+# CommunicationAI Coach
+
+AI-powered communication and public speaking coach.
+
+## Live Demo
+
+https://ai-commuication-coach-1.onrender.com/
