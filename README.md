@@ -149,4 +149,5 @@ AI-powered communication and public speaking coach.
 
 ## Live Demo
 
-https://ai-commuication-coach-1.onrender.com/
+https://ai-commuication-coach.onrender.com
+
